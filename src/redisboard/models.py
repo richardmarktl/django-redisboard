@@ -13,11 +13,6 @@ from django.utils.translation import ugettext_lazy as _
 from .utils import PY3
 from .utils import cached_property
 
-try:
-    from django.utils.datastructures import SortedDict as OrderedDict
-except ImportError:
-    from django.utils.datastructures import OrderedDict
-
 REDISBOARD_DETAIL_FILTERS = [re.compile(name) for name in getattr(settings, 'REDISBOARD_DETAIL_FILTERS', (
     'aof_enabled', 'bgrewriteaof_in_progress', 'bgsave_in_progress',
     'changes_since_last_save', 'db.*', 'last_save_time', 'multiplexing_api',
@@ -129,7 +124,7 @@ class RedisServer(models.Model):
                     info.get('used_memory_peak_human', 'n/a')
                 ),
                 'clients': info['connected_clients'],
-                'brief_details': OrderedDict(
+                'brief_details': dict(
                     prettify(k, v)
                     for name in REDISBOARD_DETAIL_FILTERS
                     for k, v in (info.items() if PY3 else info.iteritems())
